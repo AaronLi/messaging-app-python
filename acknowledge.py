@@ -61,7 +61,8 @@ def handle_acknowledge(event, context):
             UpdateExpression='REMOVE messages[0]'
         )
         messages = mailbox_retrieve['messages']['L']
-        popped_message = messages.pop()
+        if messages:
+            del messages[0]
 
         if messages:
             return {
