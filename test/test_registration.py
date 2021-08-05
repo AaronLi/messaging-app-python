@@ -9,7 +9,7 @@ output_string = json.dumps({
     })
 
 response = requests.post(
-    'https://40odyykuy0.execute-api.ca-central-1.amazonaws.com/default/messaging-app-register',
+    'https://api.dumfing.com/messaging/messaging-app-register',
     headers={
         'x-api-key': api_key,
         'Content-Type': 'application/json'

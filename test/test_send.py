@@ -5,7 +5,7 @@ import requests
 from secrets import api_key, test_send_to, test_send_from
 
 response = requests.post(
-    'https://40odyykuy0.execute-api.ca-central-1.amazonaws.com/default/messaging-app-send',
+    'https://api.dumfing.com/messaging/messaging-app-send',
     headers={
         'x-api-key': api_key,
         'Content-Type': 'application/json'
