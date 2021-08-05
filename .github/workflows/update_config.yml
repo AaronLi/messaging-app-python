@@ -14,7 +14,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  update-settings:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -39,5 +39,7 @@ jobs:
           args: zip config.zip -r python/
       - name: Publish new layer version
         run: LAYER_ARN=$(aws lambda publish-layer-version --layer-name messaging-app-settings --compatible-runtimes python3.8 --zip-file fileb://config.zip | grep LayerVersionArn | tr ' ' '\n' | tr -d \" | grep arn:aws:lambda )
+      - name: Peekaboo
+        run: echo $LAYER_ARN
       - name: Update receive lambda with new layer version
         run: aws lambda update-function-configuration --function-name messaging-app-receive --layers $LAYER_ARN
