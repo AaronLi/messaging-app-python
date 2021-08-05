@@ -1,14 +1,19 @@
+import json
+
 import boto3
 from string import ascii_lowercase, ascii_uppercase, digits
 import random
 import hashlib
+
 dynamodb = boto3.client('dynamodb')
+
 
 def random_string(length):
     out_string = ''
     for i in range(length):
-        out_string += random.choice(ascii_uppercase+ascii_lowercase+digits)
+        out_string += random.choice(ascii_uppercase + ascii_lowercase + digits)
     return out_string
+
 
 def handle_registration(event, context):
     if 'username' not in event:
@@ -19,7 +24,7 @@ def handle_registration(event, context):
     existing_user = dynamodb.get_item(
         TableName='users',
         Key={
-            'userId': {'S':user_name}
+            'userId': {'S': user_name}
         }
     ).get('Item')
 
@@ -62,6 +67,8 @@ def handle_registration(event, context):
     )
     return {
         'statusCode': 200,
-        'receiveCode': receive_code,
-        'receiveBox': mailbox_id
+        'body': json.dumps({
+            'receiveCode': receive_code,
+            'receiveBox': mailbox_id
+        })
     }

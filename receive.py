@@ -1,4 +1,5 @@
 import hashlib
+import json
 
 import boto3
 
@@ -53,13 +54,15 @@ def handle_receive(event, context):
         if 'messages' in mailbox_retrieve:
             return {
                 'statusCode': 200,
-                'message_count': len(mailbox_retrieve['messages']['L']),
-                'messages': list(map(decode_message, mailbox_retrieve['messages']['L']))
+                'body': json.dumps({
+                    'message_count': len(mailbox_retrieve['messages']['L']),
+                    'messages': list(map(decode_message, mailbox_retrieve['messages']['L']))
+                })
             }
         else:
             return {
                 'statusCode': 200,
-                'message_count': 0
+                'body': json.dumps({'message_count': 0})
             }
     else:
         raise Exception('Invalid receive code')
