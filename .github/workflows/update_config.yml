@@ -47,8 +47,19 @@ jobs:
         run: aws lambda update-function-configuration --function-name messaging-app-register --layers ${{ secrets.LAYER_ARN }}:${{ env.CURRENT_LAYER_VERSION }}
       - name: Update acknowledge lambda with new layer version
         run: aws lambda update-function-configuration --function-name messaging-app-acknowledge --layers ${{ secrets.LAYER_ARN }}:${{ env.CURRENT_LAYER_VERSION }}
-      - name: Notify Lambda Updated
+      - name: Notify Configuration Updated
+        if: ${{ success() }}
         uses: techulus/push-github-action@1.0.0
         env:
           API_KEY: ${{ secrets.PUSH_API_KEY }}
-          MESSAGE: "Messaging API configuration updated"
+          MESSAGE: "Update Messaging API configuration succeeded"
+          TITLE: "✅ Updated"
+          LINK: "https://github.com/AaronLi/messaging-app-python"
+      - name: Notify Lambda Not Updated
+        if: ${{ !success() }}
+        uses: techulus/push-github-action@1.0.0
+        env:
+          API_KEY: ${{ secrets.PUSH_API_KEY }}
+          MESSAGE: "Update Messaging API configuration failed"
+          TITLE: "❎ Failed"
+          LINK: "https://github.com/AaronLi/messaging-app-python/actions/workflows/update_config.yml"
