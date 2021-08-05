@@ -87,6 +87,7 @@ jobs:
 
     outputs:
       new-layer-version: ${{ steps.publish-layer-step.outputs.layer-version }}
+      file-changed: ${{ steps.verify-settings-changed.outputs.files_changed == 'true' }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -96,25 +97,28 @@ jobs:
         with:
           files: |
             settings.py
-      - name: fail on unchanged config file
-        if: steps.verify-settings-changed.outputs.files_changed == 'false'
-        run: exit 1
       - uses: actions/setup-python@v2
+        if: steps.verify-settings-changed.outputs.files_changed == 'true'
         with:
           python-version: "3.8"
       - uses: aws-actions/setup-sam@v1
+        if: steps.verify-settings-changed.outputs.files_changed == 'true'
       - uses: aws-actions/configure-aws-credentials@v1
+        if: steps.verify-settings-changed.outputs.files_changed == 'true'
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Move files for packaging
+        if: steps.verify-settings-changed.outputs.files_changed == 'true'
         run: mkdir python && mv settings.py python/settings.py
       - name: Package settings.py
+        if: steps.verify-settings-changed.outputs.files_changed == 'true'
         uses: montudor/action-zip@v1.0.0
         with:
           args: zip config.zip -r python/
       - name: Publish new layer version
+        if: steps.verify-settings-changed.outputs.files_changed == 'true'
         id: publish-layer-step
         run: echo "::set-output name=layer-version::$( aws lambda publish-layer-version --layer-name messaging-app-settings --compatible-runtimes python3.8 --zip-file fileb://config.zip | grep '\"Version\":' | tr -d \":, | tr " " "\n" | egrep [0-9]+ )"
   update-lambdas-to-new-layer:
@@ -122,15 +126,19 @@ jobs:
     needs: create-new-layer-version
     steps:
       - name: Update receive lambda with new layer version
+        if: ${{ needs.create-new-layer-version.outputs.file-changed }}
         run: aws lambda update-function-configuration --function-name messaging-app-receive --layers ${{ secrets.LAYER_ARN }}:${{ needs.create-new-layer-version.outputs.new-layer-version }}
       - name: Update send lambda with new layer version
+        if: ${{ needs.create-new-layer-version.outputs.file-changed }}
         run: aws lambda update-function-configuration --function-name messaging-app-send --layers ${{ secrets.LAYER_ARN }}:${{ needs.create-new-layer-version.outputs.new-layer-version }}
       - name: Update register lambda with new layer version
+        if: ${{ needs.create-new-layer-version.outputs.file-changed }}
         run: aws lambda update-function-configuration --function-name messaging-app-register --layers ${{ secrets.LAYER_ARN }}:${{ needs.create-new-layer-version.outputs.new-layer-version }}
       - name: Update acknowledge lambda with new layer version
+        if: ${{ needs.create-new-layer-version.outputs.file-changed }}
         run: aws lambda update-function-configuration --function-name messaging-app-acknowledge --layers ${{ secrets.LAYER_ARN }}:${{ needs.create-new-layer-version.outputs.new-layer-version }}
       - name: Notify Configuration Updated
-        if: ${{ success() }}
+        if: ${{ success() && needs.create-new-layer-version.outputs.file-changed }}
         uses: techulus/push-github-action@1.0.0
         env:
           API_KEY: ${{ secrets.PUSH_API_KEY }}
@@ -138,7 +146,7 @@ jobs:
           TITLE: "✅ Updated layer to version ${{ needs.create-new-layer-version.outputs.new-layer-version }}"
           LINK: "https://github.com/AaronLi/messaging-app-python"
       - name: Notify Lambda Not Updated
-        if: ${{ !success() }}
+        if: ${{ !success() && needs.create-new-layer-version.outputs.file-changed }}
         uses: techulus/push-github-action@1.0.0
         env:
           API_KEY: ${{ secrets.PUSH_API_KEY }}
