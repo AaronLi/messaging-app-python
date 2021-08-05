@@ -1,6 +1,6 @@
 import boto3
 
-from python.settings import MAX_MESSAGE_LENGTH
+from settings import MAX_MESSAGE_LENGTH
 
 dynamodb = boto3.client('dynamodb')
 
