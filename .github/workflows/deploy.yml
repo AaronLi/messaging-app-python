@@ -70,5 +70,9 @@ jobs:
           aws_region: ${{ secrets.AWS_REGION }}
           function_name: messaging-app-acknowledge
           zip_file: acknowledge.zip
-          
+      - name: Notify Lambda Updated
+        uses: techulus/push-github-action@1.0.0
+        env:
+          API_KEY: ${{ secrets.PUSH_API_KEY }}
+          MESSAGE: "Messaging API Lambda Functions updated"
       
