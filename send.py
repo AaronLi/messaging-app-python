@@ -1,5 +1,7 @@
 import boto3
 
+from python.settings import MAX_MESSAGE_LENGTH
+
 dynamodb = boto3.client('dynamodb')
 
 
@@ -17,6 +19,9 @@ def handle_send(event, context):
 
     if missing_params:
         raise Exception(f'Missing parameters: {{{", ".join(missing_params)}}}')
+
+    if len(message) > MAX_MESSAGE_LENGTH:
+        raise Exception("Message too long")
 
     if not dynamodb.get_item(TableName='mailboxes', Key={'receiveBox': {'S': receiver}}).get('Item'):
         raise Exception(f'Invalid mailbox {receiver}')

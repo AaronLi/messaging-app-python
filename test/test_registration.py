@@ -2,10 +2,10 @@ import json
 
 import requests
 
-from secrets import api_key
+from secrets import api_key, test_send_from
 
 output_string = json.dumps({
-        'username': 'tester'
+        'username': test_send_from
     })
 
 response = requests.post(
