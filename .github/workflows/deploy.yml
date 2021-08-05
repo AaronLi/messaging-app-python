@@ -43,7 +43,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ca-central-1
+          aws_region: ${{ secrets.AWS_REGION }}
           function_name: messaging-app-register
           zip_file: register.zip
       - name: Deploy send lambda
@@ -51,7 +51,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ca-central-1
+          aws_region: ${{ secrets.AWS_REGION }}
           function_name: messaging-app-send
           zip_file: send.zip
       - name: Deploy receive lambda
@@ -59,7 +59,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ca-central-1
+          aws_region: ${{ secrets.AWS_REGION }}
           function_name: messaging-app-receive
           zip_file: receive.zip
       - name: Deploy acknowledge lambda
@@ -67,7 +67,7 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ca-central-1
+          aws_region: ${{ secrets.AWS_REGION }}
           function_name: messaging-app-acknowledge
           zip_file: acknowledge.zip
           
