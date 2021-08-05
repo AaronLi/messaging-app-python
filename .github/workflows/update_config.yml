@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Update config file
+name: Update Config File
 
 # Controls when the workflow will run
 on:
@@ -39,6 +39,8 @@ jobs:
           args: zip config.zip -r python/
       - name: Publish new layer version
         run: LAYER_VERSION=$( aws lambda publish-layer-version --layer-name messaging-app-settings --compatible-runtimes python3.8 --zip-file fileb://config.zip | grep '\"Version\":' | tr -d \":, | tr " " "\n" | egrep [0-9]+ )
+      - name: "New layer version:"
+        run: echo $LAYER_VERSION
       - name: Update receive lambda with new layer version
         run: aws lambda update-function-configuration --function-name messaging-app-receive --layers ${{ secrets.LAYER_ARN }}:$LAYER_VERSION
       - name: Update send lambda with new layer version
