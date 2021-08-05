@@ -39,8 +39,6 @@ jobs:
           args: zip config.zip -r python/
       - name: Publish new layer version
         run: echo "CURRENT_LAYER_VERSION=$( aws lambda publish-layer-version --layer-name messaging-app-settings --compatible-runtimes python3.8 --zip-file fileb://config.zip | grep '\"Version\":' | tr -d \":, | tr " " "\n" | egrep [0-9]+ )" >> $GITHUB_ENV
-      - name: "New layer version:"
-        run: echo $LAYER_VERSION
       - name: Update receive lambda with new layer version
         run: aws lambda update-function-configuration --function-name messaging-app-receive --layers ${{ secrets.LAYER_ARN }}:${{ env.CURRENT_LAYER_VERSION }}
       - name: Update send lambda with new layer version
