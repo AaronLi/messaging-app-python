@@ -17,4 +17,7 @@ response = requests.post(
     data= output_string
 )
 
-print(response.json()['body'])
+if response.json()['statusCode'] != 200:
+    raise Exception(f'Test failed {response.json()}')
+else:
+    print(response.json())
