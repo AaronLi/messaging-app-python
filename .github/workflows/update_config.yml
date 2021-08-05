@@ -38,6 +38,6 @@ jobs:
         with:
           args: zip config.zip -r python/
       - name: Publish new layer version
-        run: LAYER_ARN=$(aws lambda publish-layer-version --layer-name messaging-app-settings --compatible-runtimes python3.8 --zip-file config.zip | grep LayerVersionArn | tr ' ' '\n' | tr -d \" | grep arn:aws:lambda )
+        run: LAYER_ARN=$(aws lambda publish-layer-version --layer-name messaging-app-settings --compatible-runtimes python3.8 --zip-file fileb://config.zip | grep LayerVersionArn | tr ' ' '\n' | tr -d \" | grep arn:aws:lambda )
       - name: Update receive lambda with new layer version
         run: aws lambda update-function-configuration --function-name messaging-app-receive --layers $LAYER_ARN
