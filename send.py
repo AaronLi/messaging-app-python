@@ -1,6 +1,6 @@
 import boto3
 
-from settings import MAX_MESSAGE_LENGTH
+from settings import MAX_MESSAGE_LENGTH, MAILBOXES_TABLE_NAME
 
 dynamodb = boto3.client('dynamodb')
 
@@ -23,11 +23,11 @@ def handle_send(event, context):
     if len(message) > MAX_MESSAGE_LENGTH:
         raise Exception("Message too long")
 
-    if not dynamodb.get_item(TableName='mailboxes', Key={'receiveBox': {'S': receiver}}).get('Item'):
+    if not dynamodb.get_item(TableName=MAILBOXES_TABLE_NAME, Key={'receiveBox': {'S': receiver}}).get('Item'):
         raise Exception(f'Invalid mailbox {receiver}')
 
     dynamodb.update_item(
-        TableName='mailboxes',
+        TableName=MAILBOXES_TABLE_NAME,
         Key={
             'receiveBox': {'S': receiver}
         },

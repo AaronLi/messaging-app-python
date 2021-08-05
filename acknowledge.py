@@ -2,6 +2,8 @@ import hashlib
 
 import boto3
 
+from settings import MAILBOXES_TABLE_NAME, RECEIVE_CODE_ENCODING
+
 dynamodb = boto3.client('dynamodb')
 
 
@@ -20,7 +22,7 @@ def handle_acknowledge(event, context):
         raise Exception(f'Missing parameters {{{", ".join(missing_params)}}}')
 
     mailbox_retrieve = dynamodb.get_item(
-        TableName='mailboxes',
+        TableName=MAILBOXES_TABLE_NAME,
         Key={
             'receiveBox': {'S': mailbox_id}
         },
@@ -33,8 +35,8 @@ def handle_acknowledge(event, context):
 
     hasher = hashlib.sha256()
 
-    hasher.update(receive_code_raw.encode('ascii'))
-    hasher.update(salt.encode('ascii'))
+    hasher.update(receive_code_raw.encode(RECEIVE_CODE_ENCODING))
+    hasher.update(salt.encode(RECEIVE_CODE_ENCODING))
 
     hashed_receive_code = hasher.hexdigest()
 
@@ -45,7 +47,7 @@ def handle_acknowledge(event, context):
 
     if hashed_receive_code == correct_code:
         dynamodb.update_item(
-            TableName='mailboxes',
+            TableName=MAILBOXES_TABLE_NAME,
             Key={
                 'receiveBox': {'S': mailbox_id}
             },

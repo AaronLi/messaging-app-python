@@ -3,6 +3,8 @@ import json
 
 import boto3
 
+from settings import MAILBOXES_TABLE_NAME, RECEIVE_CODE_ENCODING
+
 dynamodb = boto3.client('dynamodb')
 
 def decode_message(raw_message_map):
@@ -27,11 +29,11 @@ def handle_receive(event, context):
         raise Exception(f'Missing parameters {{{", ".join(missing_params)}}}')
 
     mailbox_retrieve = dynamodb.get_item(
-        TableName='mailboxes',
+        TableName=MAILBOXES_TABLE_NAME,
         Key={
             'receiveBox': {'S': mailbox_id}
         },
-        ProjectionExpression='salt, messages[0], receiveCodeHash'
+        ProjectionExpression='salt, messages, receiveCodeHash'
     ).get('Item')
     if not mailbox_retrieve:
         raise Exception('mailbox does not exist')
@@ -40,8 +42,8 @@ def handle_receive(event, context):
 
     hasher = hashlib.sha256()
 
-    hasher.update(receive_code_raw.encode('ascii'))
-    hasher.update(salt.encode('ascii'))
+    hasher.update(receive_code_raw.encode(RECEIVE_CODE_ENCODING))
+    hasher.update(salt.encode(RECEIVE_CODE_ENCODING))
 
     hashed_receive_code = hasher.hexdigest()
 
@@ -56,7 +58,7 @@ def handle_receive(event, context):
                 'statusCode': 200,
                 'body': json.dumps({
                     'message_count': len(mailbox_retrieve['messages']['L']),
-                    'messages': list(map(decode_message, mailbox_retrieve['messages']['L']))
+                    'messages': list(map(decode_message, mailbox_retrieve['messages']['L'][0]))
                 })
             }
         else:

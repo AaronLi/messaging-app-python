@@ -5,6 +5,8 @@ from string import ascii_lowercase, ascii_uppercase, digits
 import random
 import hashlib
 
+from settings import USERS_TABLE_NAME, MAILBOXES_TABLE_NAME
+
 dynamodb = boto3.client('dynamodb')
 
 
@@ -22,7 +24,7 @@ def handle_registration(event, context):
     user_name = event['username']
 
     existing_user = dynamodb.get_item(
-        TableName='users',
+        TableName=USERS_TABLE_NAME,
         Key={
             'userId': {'S': user_name}
         }
@@ -33,7 +35,7 @@ def handle_registration(event, context):
 
     mailbox_id = random_string(8)
 
-    while dynamodb.get_item(TableName='mailboxes', Key={'receiveBox': {'S': mailbox_id}}).get('Item'):
+    while dynamodb.get_item(TableName=MAILBOXES_TABLE_NAME, Key={'receiveBox': {'S': mailbox_id}}).get('Item'):
         mailbox_id = random_string(8)
 
     hasher = hashlib.sha256()
@@ -49,7 +51,7 @@ def handle_registration(event, context):
     hashed_code = hasher.hexdigest()
 
     dynamodb.put_item(
-        TableName='users',
+        TableName=USERS_TABLE_NAME,
         Item={
             'userId': {'S': user_name},
             'mailboxId': {'S': mailbox_id},
@@ -57,7 +59,7 @@ def handle_registration(event, context):
     )
 
     dynamodb.put_item(
-        TableName='mailboxes',
+        TableName=MAILBOXES_TABLE_NAME,
         Item={
             'receiveBox': {'S': mailbox_id},
             'messages': {'L': []},
