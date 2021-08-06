@@ -1,20 +1,26 @@
+import argparse
 import json
-
+import os
 import requests
 
-from secrets import api_key, test_send_to, test_send_from
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--sender', required=True)
+parser.add_argument('--message', default='Hello!')
+
+args = parser.parse_args()
 
 response = requests.post(
     'https://api.dumfing.com/messaging/messaging-app-send',
     headers={
-        'x-api-key': api_key,
+        'x-api-key': os.environ['API_KEY'],
         'Content-Type': 'application/json'
     },
     data=json.dumps(
         {
-            "from": test_send_from,
-            "to_box": test_send_to,
-            'message': 'Hello!'
+            "from": args.sender,
+            "to_box": os.environ['RECEIVE_BOX'],
+            'message': args.message
         }
     )
 )

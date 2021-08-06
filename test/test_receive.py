@@ -1,19 +1,17 @@
 import json
-
+import os
 import requests
-
-from secrets import api_key, test_send_to, test_receive_code
 
 response = requests.post(
     'https://api.dumfing.com/messaging/messaging-app-receive',
     headers={
-        'x-api-key': api_key,
+        'x-api-key': os.environ['API_KEY'],
         'Content-Type': 'application/json'
     },
     data=json.dumps(
         {
-            'receive-code': test_receive_code,
-            'box': test_send_to
+            'receive-code': os.environ['RECEIVE_CODE'],
+            'box': os.environ['RECEIVE_BOX']
         }
     )
 )
