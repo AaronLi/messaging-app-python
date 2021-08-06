@@ -18,22 +18,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - name: Move Lambda code
+        run: cp ./src/lambda/* .
       - name: Package registration code
         uses: montudor/action-zip@v1.0.0
         with:
-          args: zip ./register.zip ./src/lambda/registration.py
+          args: zip ./register.zip ./registration.py
       - name: Package send code
         uses: montudor/action-zip@v1.0.0
         with:
-          args: zip ./send.zip ./src/lambda/send.py
+          args: zip ./send.zip ./send.py
       - name: Package receive code
         uses: montudor/action-zip@v1.0.0
         with:
-          args: zip ./receive.zip ./src/lambda/receive.py
+          args: zip ./receive.zip ./receive.py
       - name: Package acknowledge code
         uses: montudor/action-zip@v1.0.0
         with:
-          args: zip ./acknowledge.zip ./src/lambda/acknowledge.py
+          args: zip ./acknowledge.zip ./acknowledge.py
       - name: Deploy registration lambda
         uses: appleboy/lambda-action@v0.1.3
         with:
