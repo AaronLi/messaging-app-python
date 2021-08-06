@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Update Lambda Code & Configuration
+name: "Update Lambda Code & Configuration"
 
 # Controls when the workflow will run
 on:
@@ -90,9 +90,8 @@ jobs:
       new-layer-version: ${{ steps.publish-layer-step.outputs.layer-version }}
       file-changed: ${{ steps.verify-settings-changed.outputs.files_changed }}
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: check config file changed
+      - name: Check config file changed
         uses: tj-actions/verify-changed-files@v7.1
         id: verify-settings-changed
         with:
