@@ -145,7 +145,7 @@ jobs:
           TITLE: "✅ Updated layer to version ${{ needs.create-new-layer-version.outputs.new-layer-version }}"
           LINK: "https://github.com/AaronLi/messaging-app-python"
       - name: Notify Configuration Not Updated
-        if: !success()
+        if: ${{ !success() }}
         uses: techulus/push-github-action@1.0.0
         env:
           API_KEY: ${{ secrets.PUSH_API_KEY }}
