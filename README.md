@@ -2,3 +2,5 @@
 
 ---
 # Messaging App
+Used for messaging between arduino clients
+Runs on AWS in across multiple lambda functions
