@@ -1,7 +1,7 @@
 on:
   workflow_run:
     workflows: [Update Lambda Code & Configuration]
-    branches: [main]
+    branches: [master]
     types:
       - completed
 
