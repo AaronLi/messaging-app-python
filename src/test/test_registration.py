@@ -1,17 +1,22 @@
 import json
-
+import os
+import argparse
 import requests
 
-from secrets import api_key, test_send_from
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--username', required=True)
+
+args = parser.parse_args()
 
 output_string = json.dumps({
-        'username': test_send_from
+        'username': args.username
     })
 
 response = requests.post(
     'https://api.dumfing.com/messaging/messaging-app-register',
     headers={
-        'x-api-key': api_key,
+        'x-api-key': os.environ['API_KEY'],
         'Content-Type': 'application/json'
     },
     data= output_string

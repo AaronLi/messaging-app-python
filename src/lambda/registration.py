@@ -23,6 +23,11 @@ def handle_registration(event, context):
 
     user_name = event['username']
 
+    if len(user_name) <= 3:
+        raise Exception('Username too short')
+    elif len(user_name) >= 16:
+        raise Exception('Username too long')
+
     existing_user = dynamodb.get_item(
         TableName=USERS_TABLE_NAME,
         Key={
