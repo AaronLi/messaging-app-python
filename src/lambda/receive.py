@@ -55,13 +55,21 @@ def handle_receive(event, context):
     if hashed_receive_code == correct_code:
         print(mailbox_retrieve)
         if 'messages' in mailbox_retrieve:
-            return {
-                'statusCode': 200,
-                'body': json.dumps({
-                    'message_count': len(mailbox_retrieve['messages']['L']),
-                    'messages': list(map(decode_message, mailbox_retrieve['messages']['L']))[0]
-                })
-            }
+            if mailbox_retrieve['messages']['L']:
+                return {
+                    'statusCode': 200,
+                    'body': json.dumps({
+                        'message_count': len(mailbox_retrieve['messages']['L']),
+                        'messages': list(map(decode_message, mailbox_retrieve['messages']['L']))[0]
+                    })
+                }
+            else:
+                return {
+                    'statusCode': 200,
+                    'body': json.dumps({
+                        'message_count': len(mailbox_retrieve['messages']['L']),
+                    })
+                }
         else:
             return {
                 'statusCode': 200,
