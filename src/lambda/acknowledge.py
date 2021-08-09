@@ -1,5 +1,5 @@
 import hashlib
-
+import json
 import boto3
 
 from settings import MAILBOXES_TABLE_NAME, RECEIVE_CODE_ENCODING
@@ -67,17 +67,17 @@ def handle_acknowledge(event, context):
         if messages:
             return {
                 "statusCode": 200,
-                "body": {
+                "body": json.dumps({
                     'message_count': len(messages),
                     'message': decode_message(messages[0])
-                }
+                })
             }
         else:
             return {
                 "statusCode": 200,
-                "body": {
+                "body": json.dumps({
                     'message_count': len(messages)
-                }
+                })
             }
     else:
         raise Exception('Invalid receive code')
